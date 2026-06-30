@@ -111,6 +111,12 @@ public class InventoryStockService
                 query.ProductVariantId.Value);
         }
 
+        if (query.InStockOnly == true)
+        {
+            stocks = stocks.Where(x =>
+                x.Quantity > 0);
+        }
+
         var stockList = await stocks
             .OrderByDescending(x => x.UpdatedAt)
             .Skip((query.Page - 1) * query.PageSize)

@@ -1,5 +1,4 @@
-﻿using BikeManagerV3.Product.Models;
-using BikeManagerV3.Product.Product.DTOs;
+﻿using BikeManagerV3.Product.Product.DTOs;
 
 namespace BikeManagerV3.Product.DTOs.ProductVariant;
 

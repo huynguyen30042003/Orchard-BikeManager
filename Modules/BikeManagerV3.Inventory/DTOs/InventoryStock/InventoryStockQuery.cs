@@ -6,7 +6,10 @@ public class InventoryStockQuery
 
     public Guid? ProductVariantId { get; set; }
 
+    public bool? InStockOnly { get; set; } = false;
+
     public int Page { get; set; } = 1;
 
     public int PageSize { get; set; } = 10;
+
 }

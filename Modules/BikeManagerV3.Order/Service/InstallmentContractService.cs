@@ -4,8 +4,11 @@ using BikeManagerV3.Order.DTOs.InstallmentProviders;
 using BikeManagerV3.Order.Models;
 using BikeManagerV3.Order.Responses;
 using BikeManagerV3.Order.Services;
+using BikeManagerV3.Product.DTOs.ProductVariant;
+using BikeManagerV3.Product.Product.DTOs;
 using Castle.Core.Resource;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Contracts;
 
 namespace BikeManagerV3.Order.Services;
 
@@ -69,6 +72,7 @@ public class InstallmentContractService
         var dbQuery = _context
             .InstallmentContracts
             .Include(x => x.Order)
+            .Include(x => x.Provider)
             .AsQueryable();
         if (query.CustomerId.HasValue)
         {
@@ -102,7 +106,29 @@ public class InstallmentContractService
             .Skip((query.Page - 1) *
                 query.PageSize)
             .Take(query.PageSize)
+            .Select(contract => new InstallmentContractResponse
+            {
+                Id = contract.Id,
+                OrderId = contract.OrderId,
+                ProviderId = contract.ProviderId,
+                ContractNumber = contract.ContractNumber,
+                LoanAmount = contract.LoanAmount,
+                DownPayment = contract.DownPayment,
+                InstallmentMonths = contract.InstallmentMonths,
+                MonthlyPayment = contract.MonthlyPayment,
+                InterestRate = contract.InterestRate,
+                ContractStatus = contract.ContractStatus,
+                InstallmentProvider = new InstallmentProviderResponse
+                {
+                    Id = contract.Provider.Id,
+                    Name = contract.Provider.Name,
+                    Phone = contract.Provider.Phone,
+                    ApiEndpoint = contract.Provider.ApiEndpoint,
+                    IsActive = contract.Provider.IsActive,
+                }
+            })
             .ToListAsync();
+
         return new PagedResult<InstallmentContractResponse>
         {
             Page = query.Page,
@@ -111,7 +137,7 @@ public class InstallmentContractService
 
             TotalPages = (int)Math.Ceiling(
                 totalItems / (double)query.PageSize),
-            Items = contracts.Select(Map).ToList()
+            Items = contracts
         };
     }
     public async Task<

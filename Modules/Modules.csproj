@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.1" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="2.2.1" />
+    <PackageReference Include="OrchardCore.ContentManagement" Version="2.2.1" />
+    <PackageReference Include="OrchardCore.ContentTypes.Abstractions" Version="2.2.1" />
+    <PackageReference Include="OrchardCore.DisplayManagement" Version="2.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="BikeManagerV3.Customer\BikeManagerV3.Customer.csproj" />
+    <ProjectReference Include="BikeManagerV3.Inventory\BikeManagerV3.Inventory.csproj" />
+    <ProjectReference Include="BikeManagerV3.Order\BikeManagerV3.Order.csproj" />
+    <ProjectReference Include="BikeManagerV3.Product\BikeManagerV3.Product.csproj" />
+	  <ProjectReference Include="BikeManagerV3.Repair\BikeManagerV3.Repair.csproj" />
+	  <ProjectReference Include="BikeManagerV3.Auth\BikeManagerV3.Auth.csproj" />
+	  <ProjectReference Include="BikeManagerV3.Warranty\BikeManagerV3.Warranty.csproj" />
+	  <ProjectReference Include="BikeManagerV3.Suppliers\BikeManagerV3.Suppliers.csproj" />
+	  <ProjectReference Include="BikeManagerV3.Shared\BikeManagerV3.Shared.csproj" />
+	  <ProjectReference Include="Contact\Contact.csproj" />
+	  <ProjectReference Include="Thoitiet\Thoitiet.csproj" />
+	  <ProjectReference Include="ThuVienMedia\ThuVienMedia.csproj" />
+  </ItemGroup>
+
+</Project>

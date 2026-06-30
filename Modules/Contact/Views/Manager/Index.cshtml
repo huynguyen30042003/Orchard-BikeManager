@@ -1,0 +1,327 @@
+@model List<Contact.Models.ContactModel>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+	.custom-modal {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		background: rgba(0,0,0,.4);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 9999;
+	}
+	.custom-modal-content {
+		position: absolute;
+		right: 0;
+		width: 50%;
+		height: 100%;
+		background: #fff;
+		padding: 20px;
+	}
+	.confirm-modal {
+		position: absolute;
+		width: 500px;
+		height: 200px;
+		background: #fff;
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		align-content: center;
+		border-radius: 16px;
+		justify-content: space-between
+	}
+	.confirm-modal-header {
+		display: flex;
+		justify-content: space-between;
+	}
+	.upper-content {
+		height: calc(100vh - 100px);
+		overflow-y: auto;
+	}
+	.form-contentReply {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.form-contentReply textarea {
+		border-radius: 16px;
+	}
+	.form-btn-edit {
+		display: flex;
+		gap: 12px;
+		margin-top: 20px;
+	}
+	.table-action-btn {
+		width: 130px;
+	}
+	.confirm-modal .form-btn-edit {
+		display: flex;
+		justify-content: flex-end
+	}
+	.confirm-modal .form-btn-edit button {
+		width: 80px;
+	}
+</style>
+<div class="container-fluid mt-3">
+	<div class="card shadow">
+		<div class="card-header">
+			<h4>Danh sách yêu cầu</h4>
+		</div>
+		<div class="card-body">
+			<div class="table-responsive">
+				<table class="table table-hover align-middle">
+					<thead class="table-primary">
+						<tr>
+							<th>STT</th>
+							<th>Họ tên</th>
+							<th>Nội dung</th>
+							<th>SĐT</th>
+							<th>Email</th>
+							<th>Ngày gửi</th>
+							<th>Trả lời</th>
+							<th>Mail</th>
+							<th>Chức năng</th>
+						</tr>
+					</thead>
+					<tbody>
+						@{
+							int stt = 1;
+						}
+						@foreach (var item in Model)
+						{
+							<tr>
+								<td>@stt</td>
+								<td>@item.FullName</td>
+								<td>
+									@(item.Content.Length > 120
+									? item.Content.Substring(0, 120) + "..."
+									: item.Content)
+								</td>
+								<td>@item.PhoneNumber</td>
+								<td>@item.Email</td>
+								<td>@item.CreatedAt.ToString("dd/MM/yyyy")</td>
+								<td>@item.ReplyContent</td>
+								<td>
+									@(@item.Status == 0
+									? "-"
+									: "✓")
+								</td>
+								<td class="table-action-btn">
+									<button class="btn btn-warning"
+											onclick="openReply('@item.Id')">
+										✏️
+									</button>
+									<button class="btn btn-danger"
+											onclick="openDelete()">
+										Xóa
+									</button>
+									<div id="confirm-modal" class="custom-modal d-none">
+										<div class="confirm-modal ">
+											<div class="confirm-modal-header">
+												<h5>Xóa liên hệ</h5>
+											</div>
+											<div>
+												<p>Bạn ó chắt chắn muốn xóa liên hệ này không</p>
+											</div>
+											<div class="form-btn-edit">
+												<button class="btn btn-secondary" onclick="closeDelete()">Hủy</button>
+												<button class="btn btn-danger" onclick="handleDelete('@item.Id')">Xóa</button>
+											</div>
+										</div>
+									</div>
+								</td>
+							</tr>
+							stt++;
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+@foreach (var item in Model)
+{
+	<div id="myModal-@item.Id"
+		 class="custom-modal d-none">
+		<div class="custom-modal-content">
+			<div class="upper-content">
+				<h4>Trả lời liên hệ</h4>
+				<p>
+					<strong>Tiêu đề:</strong>
+					@item.Title
+				</p>
+				<p>
+					<strong>Họ tên:</strong>
+					@item.FullName
+				</p>
+				<p>
+					<strong>SĐT:</strong>
+					@item.PhoneNumber
+				</p>
+				<p>
+					<strong>Nội dung:</strong>
+					@item.Content
+				</p>
+				<div class="form-contentReply">
+					<label>
+						Nội dung trả lời
+						<span class="text-danger">*</span>
+					</label>
+					<textarea id="noiDungTraLoi-@item.Id"
+							  rows="6"
+							  class="form-control"
+							  placeholder="Nhập nội dung trả lời">@item.ReplyContent</textarea>
+					<span id="error-@item.Id"
+						  class="text-danger">
+					</span>
+				</div>
+			</div>
+		<div class="form-btn-edit">
+				<button class="btn btn-secondary flex-fill"
+						onclick="closeModal('@item.Id')">
+					Hủy
+				</button>
+				<button class="btn btn-primary flex-fill"
+						onclick="sendData('@item.Id',false)">
+					Lưu
+				<button class="btn btn-success flex-fill"
+						onclick="sendMail('@item.Id')">
+					Lưu và gửi mail
+				</button>
+			</div>
+		</div>
+	</div>
+}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script>
+	function openReply(id)
+	{
+		document
+			.getElementById(`myModal-${id}`)
+			.classList
+			.remove("d-none");
+	}
+
+	function closeModal(id)
+	{
+		document
+			.getElementById(`myModal-${id}`)
+			.classList
+			.add("d-none");
+	}
+
+	function sendData(id,status)
+	{
+		$(`#error-${id}`).text("");
+		const replyContent =
+			$(`#noiDungTraLoi-${id}`)
+			.val()
+			.trim();
+
+		if(!replyContent)
+		{
+			$(`#error-${id}`)
+			.text("Vui lòng nhập nội dung trả lời");
+
+			return;
+		}
+
+		const data = {
+			Id: id,
+			ReplyContent: replyContent,
+			Status: status ? 1 : 0
+		};
+
+		return $.ajax({
+			url:"/api/contact/reply",
+			type:"PATCH",
+			contentType:"application/json",
+			data:JSON.stringify(data)
+		});
+	}
+
+	function openDelete() {
+		document
+			.getElementById("confirm-modal")
+			.classList
+			.remove("d-none");
+	}
+
+	function closeDelete() {
+		document
+			.getElementById("confirm-modal")
+			.classList
+			.add("d-none");
+	}
+
+	function handleDelete(id)
+	{
+		$.ajax({
+			url:`/api/contact/${id}`,
+			type:"DELETE",
+			contentType:"application/json",
+			success:function(response)
+			{
+				alert(
+					response.message
+					|| "Lưu thành công"
+				);
+				closeModal(id);
+				location.reload();
+			},
+			error:function(xhr)
+			{
+				alert(
+					xhr.responseJSON?.message
+					|| "Có lỗi xảy ra"
+				);
+			}
+		});
+	}
+	function handleSendEmail(id)
+	{
+		return $.ajax({
+			url:`/api/contact/sendEmail/${id}`,
+			type:"POST",
+			contentType:"application/json"
+		});
+	}
+	async function sendMail(id)
+	{
+		try
+		{
+			await sendData(id,true);
+			await handleSendEmail(id);
+			alert("Gửi email thành công");
+			closeModal(id);
+			location.reload();
+		}
+		catch(err)
+		{
+			alert(
+				err.responseJSON?.message
+				|| "Có lỗi xảy ra"
+			);
+		}
+	}
+
+	window.onclick = function(event)
+	{
+		if(
+			event.target.classList
+			.contains("custom-modal")
+		)
+		{
+			event.target
+			.classList
+			.add("d-none");
+		}
+	}
+
+</script>

@@ -1,0 +1,104 @@
+﻿@{
+ViewData["Title"] = "Liên hệ";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"> 
+
+<link href="~/Contact/css/contact.css" rel="stylesheet">
+
+<div class="container py-4">
+    <div class="mx-auto contact-container" style="max-width:800px;">
+        <h2 class="contact-title">Liên hệ</h2>
+        <p>
+            Những ý kiến đóng góp, phản hồi và đề xuất của bạn là nguồn thông tin quý giá giúp chúng tôi không
+            ngừng cải thiện chất lượng website.
+        </p>
+        <div class="mb-3">
+            <label class="form-label">
+                Họ và tên
+                <span class="text-danger">*</span>
+            </label>
+            <input id="hoTen" class="form-control" type="text">
+            <span data-msgf="hoTen" class="text-danger">
+            </span>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">
+                    Số điện thoại
+                    <span class="text-danger">*</span>
+                </label>
+                <input id="dienThoai" class="form-control" type="text">
+                <span data-msgf="dienThoai" class="text-danger">
+                </span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">                
+                    Email
+                    <span class="text-danger">*</span>
+                </label>
+                <input id="email" class="form-control" type="email">
+                <span data-msgf="email" class="text-danger">
+                </span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">
+                Địa chỉ
+            </label>
+            <input id="diaChi" class="form-control" type="text">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">
+                Tiêu đề
+                <span class="text-danger">*</span>
+            </label>
+            <input id="tieuDe" class="form-control" type="text">
+            <span data-msgf="tieuDe" class="text-danger">
+            </span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">
+                Nội dung
+                <span class="text-danger">*</span>
+            </label>
+            <textarea id="noiDung" rows="4" class="form-control"></textarea>
+            <span data-msgf="noiDung" class="text-danger">
+            </span>
+        </div>
+        <div class="mb-3 contact-row-check">
+            <label class="me-3">
+                Công khai
+            </label>
+            <input checked id="coCongKhai" name="congKhai" type="radio" value="1">
+            <label class="me-3" for="coCongKhai">
+                Có
+            </label>
+            <input id="koCongKhai" name="congKhai" type="radio" value="0">
+            <label for="koCongKhai">
+                Không
+            </label>
+        </div>
+        @if (ViewBag.SiteKey != null)
+        {
+        <div class="mb-3">
+            <div class="g-recaptcha" data-sitekey="@ViewBag.SiteKey">
+            </div>
+        </div>
+        }
+        <button type="button" class="btn btn-primary" onclick="addData()">
+            Gửi
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="resetData()">
+            Nhập lại
+        </button>
+    </div>
+</div>
+
+<script src="https://www.google.com/recaptcha/api.js?hl=vi"></script>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+@*
+<script src="/js/contact.js"></script> *@
+<script src="~/Contact/js/contact.js"></script>

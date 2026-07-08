@@ -3,9 +3,9 @@ namespace BikeManagerV3.Customer.DTOs.CustomerStatistics;
 
 public class CustomerStatisticQuery
 {
+    public string? Search { get; set; }
     public string? CustomerLevel { get; set; }
-
+    public string? CustomerName { get; set; }
     public int Page { get; set; } = 1;
-
     public int PageSize { get; set; } = 10;
 }

@@ -1,4 +1,7 @@
 ﻿// DTOs/CustomerStatistics/CustomerStatisticResponse.cs
+using BikeManagerV3.Customer.DTOs.Customers;
+using BikeManagerV3.Customer.Models;
+
 namespace BikeManagerV3.Customer.DTOs.CustomerStatistics;
 
 public class CustomerStatisticResponse
@@ -17,4 +20,6 @@ public class CustomerStatisticResponse
         = string.Empty;
 
     public decimal DiscountRate { get; set; }
+
+    public CustomerResponse? Customer { get; set; }
 }

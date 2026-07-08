@@ -1,8 +1,10 @@
-﻿// Services/CustomerStatisticService.cs
-using BikeManagerV3.Customer.Data;
+﻿using BikeManagerV3.Customer.Data;
+using BikeManagerV3.Customer.DTOs.Customers;
 using BikeManagerV3.Customer.DTOs.CustomerStatistics;
 using BikeManagerV3.Customer.Models;
+using BikeManagerV3.Customer.Responses;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace BikeManagerV3.Customer.Services;
 
@@ -39,10 +41,12 @@ public class CustomerStatisticService
         return Map(statistic);
     }
 
-    public async Task<List<CustomerStatisticResponse>>
+    public async Task<PagedResult<CustomerStatisticResponse>>
         GetAllAsync(CustomerStatisticQuery query)
     {
+        const string Collation = "Vietnamese_100_CI_AI";
         var dbQuery = _context.CustomerStatistics
+            .Include(x => x.Customer)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(
@@ -53,12 +57,65 @@ public class CustomerStatisticService
                 query.CustomerLevel);
         }
 
+        if (!string.IsNullOrWhiteSpace(query.Search))
+        {
+            dbQuery = dbQuery.Where(x =>
+                EF.Functions.Collate(
+                    x.Customer.FullName,
+                    Collation
+                ).Contains(query.Search)
+                ||
+                EF.Functions.Collate(
+                    x.Customer.PhoneNumber,
+                    Collation
+                ).Contains(query.Search)
+                ||
+                EF.Functions.Collate(
+                    x.CustomerLevel,
+                    Collation
+                ).Contains(query.Search)
+            );
+        }
+        var totalItems = await dbQuery.CountAsync();
+
         var statistics = await dbQuery
+            .OrderBy(x => x.LastPurchaseAt)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
+            .Select(x => new CustomerStatisticResponse
+            {
+                CustomerId = x.CustomerId,
+                TotalOrders = x.TotalOrders,
+                TotalSpent = x.TotalSpent,
+                TotalRepairs = x.TotalRepairs,
+                LastPurchaseAt = x.LastPurchaseAt,
+                CustomerLevel = x.CustomerLevel,
+                DiscountRate = x.DiscountRate,
+                Customer = new CustomerResponse
+                {
+                    Id = x.Customer.Id,
+                    FullName = x.Customer.FullName,
+                    PhoneNumber = x.Customer.PhoneNumber,
+                    Email = x.Customer.Email,
+                    Gender = x.Customer.Gender,
+                    Birthday = x.Customer.Birthday,
+                    Address = x.Customer.Address,
+                    TotalSpent = x.Customer.TotalSpent,
+                    CreatedAt = x.Customer.CreatedAt
+                }
+            })
             .ToListAsync();
+        return new PagedResult<CustomerStatisticResponse>
+        {
+            Page = query.Page,
+            PageSize = query.PageSize,
+            TotalItems = totalItems,
 
-        return statistics.Select(Map).ToList();
+            TotalPages = (int)Math.Ceiling(
+                totalItems / (double)query.PageSize),
+
+            Items = statistics
+        };
     }
 
     public async Task<CustomerStatisticResponse?>

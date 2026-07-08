@@ -22,7 +22,12 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins("http://localhost:3000")
+                .WithOrigins(
+                    "http://localhost:3000",
+                    "https://bikemanager-v3.vercel.app",
+                    "https://bikemanager-v3-kvd0kjkf5-huynguyen30042003s-projects.vercel.app",
+                    "https://bikemanager-v3-git-dev-huynguyen30042003s-projects.vercel.app"
+                )
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();

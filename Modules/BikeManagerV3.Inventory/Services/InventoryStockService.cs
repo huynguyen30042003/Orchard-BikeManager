@@ -117,6 +117,16 @@ public class InventoryStockService
                 x.Quantity > 0);
         }
 
+        if (query.TrackSerial.HasValue)
+        {
+            var variantWithTrackSerial = await _catalogDB.ProductVariants
+                .Where(x => x.TrackSerial == query.TrackSerial.Value)
+                .Select(x => x.Id)
+                .ToListAsync();
+
+            stocks = stocks.Where(x => variantWithTrackSerial.Contains(x.ProductVariantId));
+        }
+
         var stockList = await stocks
             .OrderByDescending(x => x.UpdatedAt)
             .Skip((query.Page - 1) * query.PageSize)

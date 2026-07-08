@@ -29,7 +29,7 @@ public class OrderResponse
     public string OrderStatus { get; set; }
         = string.Empty;
 
-    public required string CreatedBy { get; set; }
+    public string CreatedBy { get; set; }
 
     public DateTime CreatedAt { get; set; }
     public CustomerResponse? Customer { get; set; }

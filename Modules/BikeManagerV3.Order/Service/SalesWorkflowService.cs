@@ -237,7 +237,7 @@ public class SalesWorkflowService : ISalesWorkflowService
                 {
                     Id = Guid.NewGuid(),
                     CustomerId = customer.Id,
-
+                    BrandId = order.Id,
                     ModelName = productVariant.SKU,
                     FrameNumber = serial.SerialCode,
                     EngineNumber = serial.EngineNumber ?? string.Empty,
@@ -322,7 +322,8 @@ public class SalesWorkflowService : ISalesWorkflowService
                 InstallmentMonths = installmentRequest.InstallmentMonths <= 0 ? 12 : installmentRequest.InstallmentMonths,
                 MonthlyPayment = monthlyPayment,
                 InterestRate = installmentRequest.InterestRate,
-                ContractStatus = "Active"
+                ContractStatus = "Active",
+                CreatedAt = now
             });
         }
         Console.WriteLine(

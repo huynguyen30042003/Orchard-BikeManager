@@ -1,5 +1,5 @@
-﻿// DTOs/InstallmentContracts/InstallmentContractResponse.cs
-using BikeManagerV3.Order.DTOs.InstallmentProviders;
+﻿using BikeManagerV3.Order.DTOs.InstallmentProviders;
+using BikeManagerV3.Order.DTOs.Orders;
 
 namespace BikeManagerV3.Order.DTOs.InstallmentContracts;
 
@@ -18,6 +18,8 @@ public class InstallmentContractResponse
 
     public decimal DownPayment { get; set; }
 
+    public DateTime? CreatedAt { get; set; }
+
     public int InstallmentMonths { get; set; }
 
     public decimal MonthlyPayment { get; set; }
@@ -27,5 +29,6 @@ public class InstallmentContractResponse
     public string ContractStatus { get; set; }
         = string.Empty;
     public InstallmentProviderResponse? InstallmentProvider { get; set; }
+    public OrderResponse? Order { get; set; }
 
 }

@@ -23,7 +23,7 @@ public class InstallmentContract
 
     public string ContractStatus { get; set; }
         = string.Empty;
-
+    public DateTime CreatedAt { get; set; }
     // Navigation
     public Order Order { get; set; }
         = null!;

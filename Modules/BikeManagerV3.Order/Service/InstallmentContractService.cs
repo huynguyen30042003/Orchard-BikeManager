@@ -1,14 +1,12 @@
-﻿using BikeManagerV3.Order.Data;
+﻿using BikeManagerV3.Customer.Data;
+using BikeManagerV3.Customer.DTOs.Customers;
+using BikeManagerV3.Order.Data;
 using BikeManagerV3.Order.DTOs.InstallmentContracts;
 using BikeManagerV3.Order.DTOs.InstallmentProviders;
+using BikeManagerV3.Order.DTOs.Orders;
 using BikeManagerV3.Order.Models;
 using BikeManagerV3.Order.Responses;
-using BikeManagerV3.Order.Services;
-using BikeManagerV3.Product.DTOs.ProductVariant;
-using BikeManagerV3.Product.Product.DTOs;
-using Castle.Core.Resource;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Contracts;
 
 namespace BikeManagerV3.Order.Services;
 
@@ -16,11 +14,13 @@ public class InstallmentContractService
     : IInstallmentContractService
 {
     private readonly OrderDbContext _context;
+    private readonly CustomerDbContext _customerDbcontext;
 
     public InstallmentContractService(
-        OrderDbContext context)
+        OrderDbContext context, CustomerDbContext customerDbcontext)
     {
         _context = context;
+        _customerDbcontext = customerDbcontext;
     }
 
     public async Task<
@@ -49,7 +49,8 @@ public class InstallmentContractService
                 InterestRate =
                     request.InterestRate,
                 ContractStatus =
-                    request.ContractStatus
+                    request.ContractStatus,
+                CreatedAt = DateTime.UtcNow,
             };
 
         _context.InstallmentContracts
@@ -118,6 +119,7 @@ public class InstallmentContractService
                 MonthlyPayment = contract.MonthlyPayment,
                 InterestRate = contract.InterestRate,
                 ContractStatus = contract.ContractStatus,
+                CreatedAt = contract.CreatedAt,
                 InstallmentProvider = new InstallmentProviderResponse
                 {
                     Id = contract.Provider.Id,
@@ -178,6 +180,8 @@ public class InstallmentContractService
                 contract.InterestRate,
             ContractStatus =
                 contract.ContractStatus,
+            CreatedAt =
+                contract.CreatedAt,
             InstallmentProvider = new InstallmentProviderResponse
             {
                 Id = contract.Provider.Id,
@@ -199,6 +203,8 @@ public class InstallmentContractService
     {
         var contract = await _context
             .InstallmentContracts
+            .Include(x => x.Provider)
+            .Include(x => x.Order)
             .FirstOrDefaultAsync(x =>
                 x.Id == id);
 
@@ -209,10 +215,74 @@ public class InstallmentContractService
                 .Fail(
                     "Contract not found");
         }
-
+        var customer = await _customerDbcontext.Customers
+            .Include(x => x.Statistic)
+            .Include(x => x.Vehicles)
+            .FirstOrDefaultAsync(x => x.Id == contract.Order.CustomerId);
+        var result = new InstallmentContractResponse
+        {
+            Id = contract.Id,
+            OrderId = contract.OrderId,
+            ProviderId =
+                contract.ProviderId,
+            ContractNumber =
+                contract.ContractNumber,
+            LoanAmount =
+                contract.LoanAmount,
+            DownPayment =
+                contract.DownPayment,
+            InstallmentMonths =
+                contract.InstallmentMonths,
+            MonthlyPayment =
+                contract.MonthlyPayment,
+            InterestRate =
+                contract.InterestRate,
+            ContractStatus =
+                contract.ContractStatus,
+            CreatedAt =
+                contract.CreatedAt,
+            InstallmentProvider = new InstallmentProviderResponse
+            {
+                Id = contract.Provider.Id,
+                Name = contract.Provider.Name,
+                Phone = contract.Provider.Phone,
+                ApiEndpoint = contract.Provider.ApiEndpoint,
+                IsActive = contract.Provider.IsActive,
+            },
+            Order = new OrderResponse
+            {
+                Id = contract.Order.Id,
+                CustomerId = contract.Order.CustomerId,
+                OrderCode = contract.Order.OrderCode,
+                SubTotal = contract.Order.SubTotal,
+                DiscountAmount = contract.Order.DiscountAmount,
+                TaxAmount = contract.Order.TaxAmount,
+                TotalAmount = contract.Order.TotalAmount,
+                PaymentMethod = contract.Order.PaymentMethod,
+                PaymentStatus = contract.Order.PaymentStatus,
+                OrderStatus = contract.Order.OrderStatus,
+                CreatedBy = contract.Order.CreatedBy,
+                CreatedAt = contract.Order.CreatedAt,
+                Customer = new CustomerResponse
+                {
+                    Id = customer.Id,
+                    FullName = customer.FullName,
+                    PhoneNumber = customer.PhoneNumber,
+                    Email = customer.Email,
+                    Gender = customer.Gender,
+                    Birthday = customer.Birthday,
+                    Address = customer.Address,
+                    TotalSpent = customer.TotalSpent,
+                    TotalOrders = customer.Statistic?.TotalOrders ?? 0,
+                    LastPurchaseAt = customer.Statistic?.LastPurchaseAt,
+                    CustomerLevel = customer.Statistic?.CustomerLevel ?? "Normal",
+                    CreatedAt = customer.CreatedAt
+                }
+            }
+        };
         return ApiResponse<
             InstallmentContractResponse>
-            .Ok(Map(contract));
+            .Ok(result);
     }
 
     public async Task<
@@ -317,7 +387,9 @@ public class InstallmentContractService
             InterestRate =
                 contract.InterestRate,
             ContractStatus =
-                contract.ContractStatus
+                contract.ContractStatus,
+            CreatedAt =
+                contract.CreatedAt,
         };
     }
 }

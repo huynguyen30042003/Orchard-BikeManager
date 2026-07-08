@@ -1,10 +1,7 @@
-﻿// DTOs/Warranties/WarrantyDto.cs
-namespace BikeManagerV3.Warranty.DTOs.Warranties;
+﻿namespace BikeManagerV3.Warranty.DTOs.Warranties;
 
 public class WarrantyDto
 {
-
-
     public Guid Id { get; set; }
 
     public Guid SerialNumberId { get; set; }

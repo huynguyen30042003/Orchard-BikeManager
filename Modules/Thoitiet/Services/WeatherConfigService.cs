@@ -114,12 +114,6 @@
             {
                 return null;
             }
-            Console.WriteLine("configconfig");
-            Console.WriteLine(config.PositionName);
-            Console.WriteLine("LatitudeLatitude");
-            Console.WriteLine(config.Latitude);
-            Console.WriteLine("LongitudeLongitude");
-            Console.WriteLine(config.Longitude);
 
             return new WeatherConfig
             {

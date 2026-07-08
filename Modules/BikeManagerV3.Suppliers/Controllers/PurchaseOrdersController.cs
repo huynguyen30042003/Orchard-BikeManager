@@ -68,12 +68,7 @@ namespace BikeManagerV3.Suppliers.Controllers
             [FromBody] ReceivePurchaseOrderRequest request)
         {
             var userId = User.FindFirst("sub")!.Value;
-            Console.WriteLine($"UserId: {userId}");
 
-            foreach (var claim in User.Claims)
-            {
-                Console.WriteLine($"{claim.Type} = {claim.Value}");
-            }
             var result = await _service.ReceiveAsync(
                 id,
                 request);

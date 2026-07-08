@@ -422,8 +422,6 @@ namespace BikeManagerV3.Suppliers.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-
                 return ApiResponse<object>.Fail(
                     ex.InnerException?.Message ?? ex.Message
                 );

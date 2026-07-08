@@ -3,7 +3,6 @@ using BikeManagerV3.Warranty.DTOs.Warranties;
 using BikeManagerV3.Warranty.Models;
 using BikeManagerV3.Warranty.Responses;
 using BikeManagerV3.Warranty.Services.Interfaces;
-using Castle.Core.Resource;
 using Microsoft.EntityFrameworkCore;
 
 namespace BikeManagerV3.Warranty.Services;

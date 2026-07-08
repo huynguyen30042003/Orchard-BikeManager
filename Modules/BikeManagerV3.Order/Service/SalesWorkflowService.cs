@@ -326,10 +326,6 @@ public class SalesWorkflowService : ISalesWorkflowService
                 CreatedAt = now
             });
         }
-        Console.WriteLine(
-            _orderDb.ChangeTracker.DebugView.LongView
-        );
-        // Dùng shared transaction giữa tất cả DbContext
         await using var transaction = await _orderDb.Database.BeginTransactionAsync();
         try
         {
@@ -484,17 +480,10 @@ public class SalesWorkflowService : ISalesWorkflowService
 
         order.OrderStatus = newStatus;
         order.PaymentStatus = paymentStatus;
-        foreach (var e in _inventoryDb.ChangeTracker
-             .Entries<InventoryTransaction>())
-        {
-            Console.WriteLine(
-                $"InventoryTransaction Variant = {e.Entity.ProductVariantId}");
-        }
 
         var dbName =
     _inventoryDb.Database.GetDbConnection().Database;
 
-        Console.WriteLine($"Inventory DB = {dbName}");
         await _catalogDb.SaveChangesAsync();
         await _inventoryDb.SaveChangesAsync();
         await _warrantyDb.SaveChangesAsync();

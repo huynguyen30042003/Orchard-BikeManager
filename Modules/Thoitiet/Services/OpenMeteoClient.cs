@@ -85,8 +85,6 @@ public class OpenMeteoClient
         }
 
         item.positionName = config.PositionName;
-        Console.WriteLine("PositionNamePositionName");
-        Console.WriteLine(item);
         return [item];
     }
 }

@@ -232,9 +232,6 @@ namespace ThuVienMedia.Services
 
         public void DeleteFile(string? relativePath)
         {
-            if (string.IsNullOrWhiteSpace(relativePath))
-                Console.WriteLine("DeleteFile null relativePath"); ;
-
             var fullPath = Path.Combine(
                 Directory.GetCurrentDirectory(),
                 "wwwroot",
